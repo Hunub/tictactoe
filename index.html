@@ -18,12 +18,18 @@
       const buttonC = document.getElementById("convert");
       buttonC.addEventListener("click",()=>{
         console.log(player1.checkWin());
+
       });  
 
       function creatUser (name) {
         let allCoordinates = [];
         let currentCoordinate = {};
- 
+        
+        function writeCo (num1, num2){
+          this.currentCoordinate = {x:num1,y:num2};
+          this.allCoordinates.push(this.currentCoordinate);
+        };
+        
         function checkWin (){
           let xC = this.currentCoordinate.x;
           let yC = this.currentCoordinate.y;
@@ -38,27 +44,30 @@
 
           function checkRow(object){
             return object.y === 0;
-          }
+          };
           function checkCol(object){
             return object.x === 0;
-          }
+          };
           function checkK1(object){
             return object.x === object.y;
-          }
+          };
           function checkKM1(object){
             return object.y === -object.x
-          }
+          };
+
+          let lRow = convertedCoordinates.filter(checkRow).length;
+          let lCol = convertedCoordinates.filter(checkCol).length;
+          let lK1 = convertedCoordinates.filter(checkK1).length;
+          let lKM1 = convertedCoordinates.filter(checkKM1).length;
           console.log(convertedCoordinates.filter(checkRow));
           console.log(convertedCoordinates.filter(checkCol));
           console.log(convertedCoordinates.filter(checkK1));
           console.log(convertedCoordinates.filter(checkKM1));
-          return convertedCoordinates
-
-        };
-
-        function writeCo (num1, num2){
-          this.currentCoordinate = {x:num1,y:num2};
-          this.allCoordinates.push(this.currentCoordinate);
+          if(lRow >2 || lCol >2 || lK1 >2 || lKM1 >2){
+            return "Yes" 
+          }else{
+            return "No"
+          }
         };
 
         return {name, currentCoordinate, allCoordinates, writeCo, checkWin,}
