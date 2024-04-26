@@ -2,24 +2,50 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      #board  {
+        width: 300px;
+        height: 300px;
+        display: grid;
+        grid-template-columns: auto auto auto;
+        grid-template-rows: auto auto auto;
+      }
+      .tile {
+        width: 100px;
+        height: 100px;
+        border: solid 2px black;
+      }
+      .checked {
+        background-color: chartreuse;
+      }
+    </style>
   </head>
   <body>
-    <button id="write">Write</button>
-    <button id="convert">Convert</button>
+    <div id="board">
+      <div class="tile" id="1" x="1" y="3"></div>
+      <div class="tile" id="2" x="2" y="3"></div>
+      <div class="tile" id="3" x="3" y="3"></div>
+      <div class="tile" id="4" x="1" y="2"></div>
+      <div class="tile" id="5" x="2" y="2"></div>
+      <div class="tile" id="6" x="3" y="2"></div>
+      <div class="tile" id="7" x="1" y="1"></div>
+      <div class="tile" id="8" x="2" y="1"></div>
+      <div class="tile" id="9" x="3" y="1"></div>
+    </div>
     <script>
-      const buttonW = document.getElementById("write");
-      buttonW.addEventListener("click",()=>{
-        let a = prompt("What is x?");
-        let b = prompt("what is y?");
-        player1.writeCo(a,b);
-        console.log(player1);
-      });
-
-      const buttonC = document.getElementById("convert");
-      buttonC.addEventListener("click",()=>{
-        console.log(player1.checkWin());
-
-      });  
+      const tiles = document.querySelectorAll(".tile");
+      console.log(tiles);
+      for(let i=0; i<9; i++){
+        tiles[i].addEventListener("click",(e)=>{
+            let a = e.target.getAttribute("x")
+            let b = e.target.getAttribute("y")
+            e.target.setAttribute("class","tile checked");
+            player1.writeCo(a,b);
+            console.log(player1);
+            console.log(player1.checkWin())
+          }
+        )
+      };
 
       function creatUser (name) {
         let allCoordinates = [];
@@ -55,14 +81,17 @@
             return object.y === -object.x
           };
 
-          let lRow = convertedCoordinates.filter(checkRow).length;
-          let lCol = convertedCoordinates.filter(checkCol).length;
-          let lK1 = convertedCoordinates.filter(checkK1).length;
-          let lKM1 = convertedCoordinates.filter(checkKM1).length;
           console.log(convertedCoordinates.filter(checkRow));
           console.log(convertedCoordinates.filter(checkCol));
           console.log(convertedCoordinates.filter(checkK1));
           console.log(convertedCoordinates.filter(checkKM1));
+
+
+          let lRow = convertedCoordinates.filter((object)=>object.y === 0).length;
+          let lCol = convertedCoordinates.filter((object)=>object.x === 0).length;
+          let lK1 = convertedCoordinates.filter((object)=>object.x === object.y).length;
+          let lKM1 = convertedCoordinates.filter((object)=>object.y === -object.x).length;
+
           if(lRow >2 || lCol >2 || lK1 >2 || lKM1 >2){
             return "Yes" 
           }else{
@@ -74,6 +103,10 @@
       }
 
       const player1 = creatUser("player1");
+
+
+
+
 
     </script>
   </body>
