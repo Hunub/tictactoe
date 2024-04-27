@@ -21,7 +21,12 @@
       .checked-red {
         background-color: rgb(255, 0, 0);
       }
-
+      .win1 {
+        background-color: rgb(188, 247, 24);
+      }
+      .win2 {
+        background-color: rgb(255, 141, 48);
+      }
     </style>
   </head>
   <body>
@@ -38,6 +43,7 @@
     </div>
     <script>
       const tiles = document.querySelectorAll(".tile");
+      const gameBoard = document.getElementById("board");
       console.log(tiles);
       for(let i=0; i<9; i++){
         tiles[i].addEventListener("click",(e)=>{
@@ -46,7 +52,7 @@
             // e.target.setAttribute("class","tile checked");
             board.play(e);
             // player.player1.writeCo(a,b);
-            console.log(player);
+            // console.log(player);
             // console.log(player["player1"].checkWin())
           }
         )
@@ -73,13 +79,12 @@
 
           const arrAll = [arrRow, arrCol, arrK1, arrKM1];
           const arrWin = arrAll.filter((array)=>array.length>2);
-
-          console.log(arrAll);
           console.log(arrWin);
 
           if(arrWin.length>0){
-            this.winCoordinates= arrWin;
-            console.log(this.winCoordinates);
+            
+            this.winCoordinates= arrWin[0];
+
             return true;
           }else{
             return false;
@@ -98,12 +103,15 @@
       }();
 
       const board = function (){
-        let currentPlayer = "player1"
+        let currentPlayer = "player1";
+        let winClass = "win1";
         function setCurrentPlayer(){
           if (this.currentPlayer==="player1"){
             this.currentPlayer = "player2";
+            winClass = "win2";
           }else{
             this.currentPlayer = "player1";
+            winClass = "win1";
           };
         } 
 
@@ -117,6 +125,13 @@
           }
           player[`${this.currentPlayer}`].writeCo(a,b);
           if(player[`${this.currentPlayer}`].checkWin()){
+            console.log(player[`${this.currentPlayer}`].winCoordinates);
+            for(let i=0;i<3;i++){
+              console.log(player[`${this.currentPlayer}`].winCoordinates[i]);
+              let xWin = player[`${this.currentPlayer}`].winCoordinates[i].x;
+              let yWin = player[`${this.currentPlayer}`].winCoordinates[i].y;
+              document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`${winClass}`);
+            }
             console.log(`Yay ${this.currentPlayer} won!`);
           };
           this.setCurrentPlayer();
