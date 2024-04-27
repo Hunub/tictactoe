@@ -7,10 +7,10 @@
         width: 300px;
         height: 300px;
         display: grid;
-        grid-template-columns: auto auto auto;
-        grid-template-rows: auto auto auto;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
       }
-      .tile {
+      #board>.tile {
         width: 100px;
         height: 100px;
         border: solid 2px black;
@@ -64,18 +64,18 @@
         let currentCoordinate = {};
         
         function writeCo (num1, num2){
-          this.currentCoordinate = {x:num1,y:num2};
-          this.allCoordinates.push(this.currentCoordinate);
+          currentCoordinate = {x:num1,y:num2};
+          allCoordinates.push(currentCoordinate);
         };
         
         function checkWin (){
-          let xC = this.currentCoordinate.x;
-          let yC = this.currentCoordinate.y;
+          let xC = currentCoordinate.x;
+          let yC = currentCoordinate.y;
 
-          let arrRow = this.allCoordinates.filter((object)=>object.y === yC);
-          let arrCol = this.allCoordinates.filter((object)=>object.x === xC);
-          let arrK1 = this.allCoordinates.filter((object)=>object.x-xC === object.y-yC);
-          let arrKM1 = this.allCoordinates.filter((object)=>object.y-yC === xC-object.x);
+          let arrRow = allCoordinates.filter((object)=>object.y === yC);
+          let arrCol = allCoordinates.filter((object)=>object.x === xC);
+          let arrK1 = allCoordinates.filter((object)=>object.x-xC === object.y-yC);
+          let arrKM1 = allCoordinates.filter((object)=>object.y-yC === xC-object.x);
 
           const arrAll = [arrRow, arrCol, arrK1, arrKM1];
           const arrWin = arrAll.filter((array)=>array.length>2);
@@ -91,7 +91,7 @@
           }
         };
 
-        return {name, currentCoordinate,winCoordinates, allCoordinates, writeCo, checkWin,}
+        return {name, winCoordinates, writeCo, checkWin,}
       }
 
       const player = function(){
@@ -106,11 +106,11 @@
         let currentPlayer = "player1";
         let winClass = "win1";
         function setCurrentPlayer(){
-          if (this.currentPlayer==="player1"){
-            this.currentPlayer = "player2";
+          if (currentPlayer==="player1"){
+            currentPlayer = "player2";
             winClass = "win2";
           }else{
-            this.currentPlayer = "player1";
+            currentPlayer = "player1";
             winClass = "win1";
           };
         } 
@@ -118,26 +118,26 @@
         function play(e){
           let a = e.target.getAttribute("x")
           let b = e.target.getAttribute("y")
-          if(this.currentPlayer==="player1"){
+          if(currentPlayer==="player1"){
             e.target.setAttribute("class","tile checked-green");
           } else{
             e.target.setAttribute("class","tile checked-red");
           }
-          player[`${this.currentPlayer}`].writeCo(a,b);
-          if(player[`${this.currentPlayer}`].checkWin()){
-            console.log(player[`${this.currentPlayer}`].winCoordinates);
+          player[`${currentPlayer}`].writeCo(a,b);
+          if(player[`${currentPlayer}`].checkWin()){
+            console.log(player[`${currentPlayer}`].winCoordinates);
             for(let i=0;i<3;i++){
-              console.log(player[`${this.currentPlayer}`].winCoordinates[i]);
-              let xWin = player[`${this.currentPlayer}`].winCoordinates[i].x;
-              let yWin = player[`${this.currentPlayer}`].winCoordinates[i].y;
-              document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`${winClass}`);
+              console.log(player[`${currentPlayer}`].winCoordinates[i]);
+              let xWin = player[`${currentPlayer}`].winCoordinates[i].x;
+              let yWin = player[`${currentPlayer}`].winCoordinates[i].y;
+              document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`tile ${winClass}`);
             }
-            console.log(`Yay ${this.currentPlayer} won!`);
+            console.log(`Yay Player ${player[currentPlayer].name} won!`);
           };
-          this.setCurrentPlayer();
+          setCurrentPlayer();
         }
 
-        return{currentPlayer, setCurrentPlayer, play,}
+        return{play,}
       }();
 
     </script>
