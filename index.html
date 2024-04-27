@@ -15,9 +15,13 @@
         height: 100px;
         border: solid 2px black;
       }
-      .checked {
+      .checked-green {
         background-color: chartreuse;
       }
+      .checked-red {
+        background-color: rgb(255, 0, 0);
+      }
+
     </style>
   </head>
   <body>
@@ -37,12 +41,13 @@
       console.log(tiles);
       for(let i=0; i<9; i++){
         tiles[i].addEventListener("click",(e)=>{
-            let a = e.target.getAttribute("x")
-            let b = e.target.getAttribute("y")
-            e.target.setAttribute("class","tile checked");
-            player1.writeCo(a,b);
-            console.log(player1);
-            console.log(player1.checkWin())
+            // let a = e.target.getAttribute("x")
+            // let b = e.target.getAttribute("y")
+            // e.target.setAttribute("class","tile checked");
+            board.play(e);
+            // player.player1.writeCo(a,b);
+            console.log(player);
+            // console.log(player["player1"].checkWin())
           }
         )
       };
@@ -68,23 +73,25 @@
 
           let convertedCoordinates = this.allCoordinates.map(convertToOrigin);
 
-          function checkRow(object){
-            return object.y === 0;
-          };
-          function checkCol(object){
-            return object.x === 0;
-          };
-          function checkK1(object){
-            return object.x === object.y;
-          };
-          function checkKM1(object){
-            return object.y === -object.x
-          };
+          // to be deleted later
+          // function checkRow(object){
+          //   return object.y === 0;
+          // };
+          // function checkCol(object){
+          //   return object.x === 0;
+          // };
+          // function checkK1(object){
+          //   return object.x === object.y;
+          // };
+          // function checkKM1(object){
+          //   return object.y === -object.x
+          // };
 
-          console.log(convertedCoordinates.filter(checkRow));
-          console.log(convertedCoordinates.filter(checkCol));
-          console.log(convertedCoordinates.filter(checkK1));
-          console.log(convertedCoordinates.filter(checkKM1));
+          // console.log(convertedCoordinates.filter(checkRow));
+          // console.log(convertedCoordinates.filter(checkCol));
+          // console.log(convertedCoordinates.filter(checkK1));
+          // console.log(convertedCoordinates.filter(checkKM1));
+          //
 
 
           let lRow = convertedCoordinates.filter((object)=>object.y === 0).length;
@@ -93,20 +100,50 @@
           let lKM1 = convertedCoordinates.filter((object)=>object.y === -object.x).length;
 
           if(lRow >2 || lCol >2 || lK1 >2 || lKM1 >2){
-            return "Yes" 
+            return true;
           }else{
-            return "No"
+            return false;
           }
         };
 
         return {name, currentCoordinate, allCoordinates, writeCo, checkWin,}
       }
 
-      const player1 = creatUser("player1");
+      const player = function(){
+        let name1 = prompt("your name1");
+        let name2 = prompt("your name2");
+        const player1 = creatUser(name1);
+        const player2 = creatUser(name2);
+        return {player1,player2};
+      }();
 
+      const board = function (){
+        let currentPlayer = "player1"
+        function setCurrentPlayer(){
+          if (this.currentPlayer==="player1"){
+            this.currentPlayer = "player2";
+          }else{
+            this.currentPlayer = "player1";
+          };
+        } 
 
+        function play(e){
+          let a = e.target.getAttribute("x")
+          let b = e.target.getAttribute("y")
+          if(this.currentPlayer==="player1"){
+            e.target.setAttribute("class","tile checked-green");
+          } else{
+            e.target.setAttribute("class","tile checked-red");
+          }
+          player[`${this.currentPlayer}`].writeCo(a,b);
+          if(player[`${this.currentPlayer}`].checkWin()){
+            console.log(`Yay ${this.currentPlayer} won!`);
+          };
+          this.setCurrentPlayer();
+        }
 
-
+        return{currentPlayer, setCurrentPlayer, play,}
+      }();
 
     </script>
   </body>
