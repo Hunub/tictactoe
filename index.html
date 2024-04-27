@@ -44,9 +44,7 @@
     <script>
       const tiles = document.querySelectorAll(".tile");
       const gameBoard = document.getElementById("board");
-      for(let i=0; i<9; i++){
-        tiles[i].addEventListener("click",(e)=>{board.play(e),{ once: true }})
-      };
+
 
       function creatUser (name) {
         let allCoordinates = [];
@@ -105,14 +103,14 @@
           };
         } 
 
-        function play(e){
-          let a = e.target.getAttribute("x")
-          let b = e.target.getAttribute("y")
+        function play(event){
+          let a = event.target.getAttribute("x")
+          let b = event.target.getAttribute("y")
 
           if(currentPlayer===player.player1){
-            e.target.setAttribute("class","tile checked-green");
+            event.target.setAttribute("class","tile checked-green");
           } else{
-            e.target.setAttribute("class","tile checked-red");
+            event.target.setAttribute("class","tile checked-red");
           }
 
           currentPlayer.writeCo(a,b);
@@ -131,5 +129,8 @@
         return{play,}
       }();
 
+      for(let i=0; i<9; i++){
+        tiles[i].addEventListener("click",board.play,{ once: true })
+      };
     </script>
   </body>
