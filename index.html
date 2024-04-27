@@ -44,18 +44,8 @@
     <script>
       const tiles = document.querySelectorAll(".tile");
       const gameBoard = document.getElementById("board");
-      console.log(tiles);
       for(let i=0; i<9; i++){
-        tiles[i].addEventListener("click",(e)=>{
-            // let a = e.target.getAttribute("x")
-            // let b = e.target.getAttribute("y")
-            // e.target.setAttribute("class","tile checked");
-            board.play(e);
-            // player.player1.writeCo(a,b);
-            // console.log(player);
-            // console.log(player["player1"].checkWin())
-          }
-        )
+        tiles[i].addEventListener("click",(e)=>{board.play(e),{ once: true }})
       };
 
       function creatUser (name) {
@@ -103,14 +93,14 @@
       }();
 
       const board = function (){
-        let currentPlayer = "player1";
+        let currentPlayer = player.player1;
         let winClass = "win1";
         function setCurrentPlayer(){
-          if (currentPlayer==="player1"){
-            currentPlayer = "player2";
+          if (currentPlayer===player.player1){
+            currentPlayer = player.player2;
             winClass = "win2";
           }else{
-            currentPlayer = "player1";
+            currentPlayer = player.player1;
             winClass = "win1";
           };
         } 
@@ -118,21 +108,22 @@
         function play(e){
           let a = e.target.getAttribute("x")
           let b = e.target.getAttribute("y")
-          if(currentPlayer==="player1"){
+
+          if(currentPlayer===player.player1){
             e.target.setAttribute("class","tile checked-green");
           } else{
             e.target.setAttribute("class","tile checked-red");
           }
-          player[`${currentPlayer}`].writeCo(a,b);
-          if(player[`${currentPlayer}`].checkWin()){
-            console.log(player[`${currentPlayer}`].winCoordinates);
+
+          currentPlayer.writeCo(a,b);
+          
+          if(currentPlayer.checkWin()){
             for(let i=0;i<3;i++){
-              console.log(player[`${currentPlayer}`].winCoordinates[i]);
-              let xWin = player[`${currentPlayer}`].winCoordinates[i].x;
-              let yWin = player[`${currentPlayer}`].winCoordinates[i].y;
+              let xWin = currentPlayer.winCoordinates[i].x;
+              let yWin = currentPlayer.winCoordinates[i].y;
               document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`tile ${winClass}`);
             }
-            console.log(`Yay Player ${player[currentPlayer].name} won!`);
+            console.log(`Yay Player ${currentPlayer.name} won!`);
           };
           setCurrentPlayer();
         }
