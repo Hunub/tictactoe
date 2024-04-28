@@ -50,12 +50,13 @@
         let allCoordinates = [];
         let winCoordinates = [];
         let currentCoordinate = {};
+        let halfCoordinate = {};
         
         function writeCo (num1, num2){
           currentCoordinate = {x:num1,y:num2};
           allCoordinates.push(currentCoordinate);
         };
-        
+
         function checkWin (){
           let xC = currentCoordinate.x;
           let yC = currentCoordinate.y;
@@ -67,19 +68,20 @@
 
           const arrAll = [arrRow, arrCol, arrK1, arrKM1];
           const arrWin = arrAll.filter((array)=>array.length>2);
-          console.log(arrWin);
 
-          if(arrWin.length>0){
-            
+          if(arrWin.length>0){            
             this.winCoordinates= arrWin[0];
-
             return true;
           }else{
+            if (allCoordinates.length>3){
+              this.halfCoordinate =  allCoordinates.shift();             
+              console.log(this.halfCoordinate);
+            }
             return false;
           }
         };
 
-        return {name, winCoordinates, writeCo, checkWin,}
+        return {name, winCoordinates, halfCoordinate, writeCo, checkWin,}
       }
 
       const player = function(){
@@ -116,11 +118,11 @@
           currentPlayer.writeCo(a,b);
           
           if(currentPlayer.checkWin()){
-            for(let i=0;i<3;i++){
-              let xWin = currentPlayer.winCoordinates[i].x;
-              let yWin = currentPlayer.winCoordinates[i].y;
+            currentPlayer.winCoordinates.forEach((element)=>{
+              let xWin = element.x;
+              let yWin = element.y;
               document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`tile ${winClass}`);
-            }
+            })
             console.log(`Yay Player ${currentPlayer.name} won!`);
           };
           setCurrentPlayer();
