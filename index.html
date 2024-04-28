@@ -16,20 +16,31 @@
         border: solid 2px black;
       }
       .checked-green {
-        background-color: chartreuse;
+        background-color: rgb(42, 81, 255);
       }
       .checked-red {
         background-color: rgb(255, 0, 0);
       }
       .win1 {
-        background-color: rgb(188, 247, 24);
+        background-color: rgb(15, 1, 141);
       }
       .win2 {
-        background-color: rgb(255, 141, 48);
+        background-color: rgb(134, 3, 3);
       }
+      .half1 {
+        background-color: rgb(167, 172, 250);
+      }
+      .half2 {
+        background-color: rgb(255, 159, 159);
+      }
+
     </style>
   </head>
   <body>
+    <div>
+      <button id="normalMode">NORMAL</button>
+      <button id="infiniteMode">INFINITE</button>
+    </div>
     <div id="board">
       <div class="tile" id="1" x="1" y="3"></div>
       <div class="tile" id="2" x="2" y="3"></div>
@@ -44,6 +55,9 @@
     <script>
       const tiles = document.querySelectorAll(".tile");
       const gameBoard = document.getElementById("board");
+      const normalMode = document.getElementById("normalMode");
+      const infiniteMode = document.getElementById("infiniteMode");
+
 
 
       function creatUser (name) {
@@ -54,17 +68,17 @@
         
         function writeCo (num1, num2){
           currentCoordinate = {x:num1,y:num2};
-          allCoordinates.push(currentCoordinate);
+          this.allCoordinates.push(currentCoordinate);
         };
 
         function checkWin (){
           let xC = currentCoordinate.x;
           let yC = currentCoordinate.y;
 
-          let arrRow = allCoordinates.filter((object)=>object.y === yC);
-          let arrCol = allCoordinates.filter((object)=>object.x === xC);
-          let arrK1 = allCoordinates.filter((object)=>object.x-xC === object.y-yC);
-          let arrKM1 = allCoordinates.filter((object)=>object.y-yC === xC-object.x);
+          let arrRow = this.allCoordinates.filter((object)=>object.y === yC);
+          let arrCol = this.allCoordinates.filter((object)=>object.x === xC);
+          let arrK1 = this.allCoordinates.filter((object)=>object.x-xC === object.y-yC);
+          let arrKM1 = this.allCoordinates.filter((object)=>object.y-yC === xC-object.x);
 
           const arrAll = [arrRow, arrCol, arrK1, arrKM1];
           const arrWin = arrAll.filter((array)=>array.length>2);
@@ -73,38 +87,41 @@
             this.winCoordinates= arrWin[0];
             return true;
           }else{
-            if (allCoordinates.length>3){
-              this.halfCoordinate =  allCoordinates.shift();             
-              console.log(this.halfCoordinate);
-            }
             return false;
           }
         };
 
-        return {name, winCoordinates, halfCoordinate, writeCo, checkWin,}
+        return {name, allCoordinates, winCoordinates, halfCoordinate, writeCo, checkWin,}
       }
 
       const player = function(){
-        let name1 = prompt("your name1");
-        let name2 = prompt("your name2");
-        const player1 = creatUser(name1);
-        const player2 = creatUser(name2);
+        // let name1 = prompt("your name1");
+        // let name2 = prompt("your name2");
+        const player1 = creatUser("Blue");
+        const player2 = creatUser("Red");
         return {player1,player2};
       }();
 
       const board = function (){
         let currentPlayer = player.player1;
+        let theOtherPlayer = player.player2;
         let winClass = "win1";
+        let halfClass = "half1";
+
         function setCurrentPlayer(){
           if (currentPlayer===player.player1){
             currentPlayer = player.player2;
+            theOtherPlayer = player.player1;
             winClass = "win2";
+            halfClass = "half2"
           }else{
             currentPlayer = player.player1;
+            theOtherPlayer = player.player2;
             winClass = "win1";
+            halfClass = "half1";
           };
         } 
-
+        
         function play(event){
           let a = event.target.getAttribute("x")
           let b = event.target.getAttribute("y")
@@ -124,15 +141,81 @@
               document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`tile ${winClass}`);
             })
             console.log(`Yay Player ${currentPlayer.name} won!`);
-          };
-          setCurrentPlayer();
+          }else if(currentPlayer.allCoordinates.length===5){
+            console.log("it's a draw");
+          }else {
+            event.target.removeEventListener("click",board.play);
+            setCurrentPlayer();
+            console.log(`${currentPlayer.name}'s turn:`)
+          };  
         }
 
-        return{play,}
+        function playInfinite(event){
+          let a = event.target.getAttribute("x")
+          let b = event.target.getAttribute("y")
+
+          if(currentPlayer===player.player1){
+            event.target.setAttribute("class","tile checked-green");
+          } else{
+            event.target.setAttribute("class","tile checked-red");
+          }
+
+          currentPlayer.writeCo(a,b);
+          
+          if(currentPlayer.checkWin()){
+            currentPlayer.winCoordinates.forEach((element)=>{
+              let xWin = element.x;
+              let yWin = element.y;
+              document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`tile ${winClass}`);
+            })
+            console.log(`Yay Player ${currentPlayer.name} won!`);
+          }else{
+            if (currentPlayer.allCoordinates.length>3){
+              currentPlayer.halfCoordinate = currentPlayer.allCoordinates.shift();             
+              let xHalf = currentPlayer.halfCoordinate.x;
+              let yHalf = currentPlayer.halfCoordinate.y;
+              let tileHalf = document.querySelector(`[x= "${xHalf}"][y= "${yHalf}"]`);
+              tileHalf.setAttribute("class",`tile ${halfClass}`);
+              if(theOtherPlayer.halfCoordinate.x){
+                let xDel = theOtherPlayer.halfCoordinate.x;
+                let yDel = theOtherPlayer.halfCoordinate.y;
+                let tileDel = document.querySelector(`[x= "${xDel}"][y= "${yDel}"]`)
+                tileDel.setAttribute("class","tile");
+                tileDel.addEventListener("click",board.play);
+              }
+            };
+            event.target.removeEventListener("click",board.play);
+            setCurrentPlayer();
+            console.log(`${currentPlayer.name}'s turn:`);
+          };
+        }
+
+        return{play,playInfinite};
       }();
 
-      for(let i=0; i<9; i++){
-        tiles[i].addEventListener("click",board.play,{ once: true })
-      };
+      const game = function (){
+        function createNormalGame(){
+          for(let i=0; i<9; i++){
+            tiles[i].addEventListener("click",board.play);
+          };
+
+          console.log("Normal mode:")
+        }
+
+        function createInfiniteGame(){
+          for(let i=0; i<9; i++){
+            tiles[i].addEventListener("click",board.playInfinite);
+          };
+
+          console.log("Infinite mode:")
+        } 
+
+        return{createNormalGame, createInfiniteGame};
+      }();
+
+
+      normalMode.addEventListener("click",game.createNormalGame);
+      infiniteMode.addEventListener("click",game.createInfiniteGame);
+      
     </script>
   </body>
