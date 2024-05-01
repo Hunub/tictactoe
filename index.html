@@ -40,6 +40,7 @@
     <div>
       <button id="normalMode">NORMAL</button>
       <button id="infiniteMode">INFINITE</button>
+      <button id="reset">RESET</button>
     </div>
     <div id="board">
       <div class="tile" id="1" x="1" y="3"></div>
@@ -57,6 +58,7 @@
       const gameBoard = document.getElementById("board");
       const normalMode = document.getElementById("normalMode");
       const infiniteMode = document.getElementById("infiniteMode");
+      const resetBtn = document.getElementById("reset");
 
 
 
@@ -83,7 +85,8 @@
           const arrAll = [arrRow, arrCol, arrK1, arrKM1];
           const arrWin = arrAll.filter((array)=>array.length>2);
 
-          if(arrWin.length>0){            
+          if(arrWin.length>0){     
+            console.log("arrWin is", arrWin);       
             this.winCoordinates= arrWin[0];
             return true;
           }else{
@@ -97,8 +100,8 @@
       const player = function(){
         // let name1 = prompt("your name1");
         // let name2 = prompt("your name2");
-        const player1 = creatUser("Blue");
-        const player2 = creatUser("Red");
+        let player1 = creatUser("Blue");
+        let player2 = creatUser("Red");
         return {player1,player2};
       }();
 
@@ -139,7 +142,11 @@
               let xWin = element.x;
               let yWin = element.y;
               document.querySelector(`[x= "${xWin}"][y= "${yWin}"]`).setAttribute("class",`tile ${winClass}`);
-            })
+            });
+            
+            for(let i=0; i<9; i++){
+            tiles[i].removeEventListener("click",board.play);
+            };
             console.log(`Yay Player ${currentPlayer.name} won!`);
           }else if(currentPlayer.allCoordinates.length===5){
             console.log("it's a draw");
@@ -161,6 +168,8 @@
           }
 
           currentPlayer.writeCo(a,b);
+
+          
           
           if(currentPlayer.checkWin()){
             currentPlayer.winCoordinates.forEach((element)=>{
@@ -176,21 +185,33 @@
               let yHalf = currentPlayer.halfCoordinate.y;
               let tileHalf = document.querySelector(`[x= "${xHalf}"][y= "${yHalf}"]`);
               tileHalf.setAttribute("class",`tile ${halfClass}`);
-              if(theOtherPlayer.halfCoordinate.x){
-                let xDel = theOtherPlayer.halfCoordinate.x;
-                let yDel = theOtherPlayer.halfCoordinate.y;
-                let tileDel = document.querySelector(`[x= "${xDel}"][y= "${yDel}"]`)
-                tileDel.setAttribute("class","tile");
-                tileDel.addEventListener("click",board.play);
-              }
             };
+            if(theOtherPlayer.halfCoordinate.x){
+              let xDel = theOtherPlayer.halfCoordinate.x;
+              let yDel = theOtherPlayer.halfCoordinate.y;
+              let tileDel = document.querySelector(`[x= "${xDel}"][y= "${yDel}"]`)
+              tileDel.setAttribute("class","tile");
+              tileDel.addEventListener("click",board.play);
+            }
             event.target.removeEventListener("click",board.play);
             setCurrentPlayer();
             console.log(`${currentPlayer.name}'s turn:`);
           };
         }
 
-        return{play,playInfinite};
+        function reset(){
+          delete player.player1;
+          delete player.player2;
+          player.player1 = creatUser("Blue");
+          player.player2 = creatUser("Red");
+          console.log(player);
+
+          tiles.forEach((element)=>{
+            element.setAttribute("class","tile");
+          })
+        }
+
+        return{play,playInfinite,reset};
       }();
 
       const game = function (){
@@ -213,9 +234,24 @@
         return{createNormalGame, createInfiniteGame};
       }();
 
+      
+      const testObj = function(){
+      let list = [];
+      
+      function putIn(item){
+        this.list.push(item);
+      };
+
+      function clearList(){
+        this.list.length = 0;
+      }
+
+      return{list, putIn, clearList};
+    }();
 
       normalMode.addEventListener("click",game.createNormalGame);
       infiniteMode.addEventListener("click",game.createInfiniteGame);
+      resetBtn.addEventListener("click",board.reset);
       
     </script>
   </body>
